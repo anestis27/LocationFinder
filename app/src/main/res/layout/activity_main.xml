@@ -29,22 +29,20 @@
             android:indeterminate="true" />
 
         <TextView
-            android:id="@+id/lccation_status"
+            android:id="@+id/tw_locationStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
-            android:text="blah"
-            android:layout_marginLeft="10dp" />
+            android:text="Starting Up" />
 
     </LinearLayout>
 
-    <TextView
-        android:layout_marginTop="20dp"
-        android:id="@+id/datatextView"
+    <Button
+        android:id="@+id/btn_shareRoomString"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Data"
-        android:textSize="25dp"/>
+        android:text="Send where the SDU I am " />
 
 
 </LinearLayout>

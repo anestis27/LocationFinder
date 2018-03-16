@@ -3,23 +3,15 @@ package com.example.orion.locationfinder;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +20,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.kontakt.sdk.android.ble.connection.OnServiceReadyListener;
 import com.kontakt.sdk.android.ble.manager.ProximityManager;
 import com.kontakt.sdk.android.ble.manager.ProximityManagerFactory;
@@ -41,13 +31,10 @@ import com.kontakt.sdk.android.common.profile.IBeaconRegion;
 
 import org.json.JSONException;
 
-import java.util.Date;
-import java.util.List;
 
 
 public class MainActivity extends BaseActivity {
 
-    private static final String TAG = "ReportIssueActivity";
     private static final int PERMISSIONS_REQUEST_LOCATION = 122;
     private static final double GEOFENCE_1_LAT = 55.367844;
     private static final double GEOFENCE_1_LONG = 10.431250;
@@ -58,18 +45,15 @@ public class MainActivity extends BaseActivity {
     private LocationCallback locationCallback;
     private ProximityManager proximityManager;
     private BeaconReader beaconReader;
-    private RoomDetails room;
-    private boolean roomNameManual = false; // Did the user enter the room name manually?
+
+    private String roomSharableString = "";
 
     private Location geoFP1 = new Location("DEV");
     private Location geoFP2 = new Location("DEV");
 
-    private Spinner room_spinner;
 
 
     private TextView location_status;
-    private View progressBar;
-    private ImageView progressImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +62,7 @@ public class MainActivity extends BaseActivity {
         KontaktSDK.initialize("AIzgCotlMgCdlfBqbblrveDKuZpCssPC");
 
 
-        location_status = (TextView) findViewById(R.id.lccation_status);
-        progressBar = findViewById(R.id.location_statuc_bar);
+        location_status = findViewById(R.id.tw_locationStatus);
 
 
         geoFP1.setLatitude(GEOFENCE_1_LAT);
@@ -91,15 +74,26 @@ public class MainActivity extends BaseActivity {
         proximityManager = ProximityManagerFactory.create(this);
         proximityManager.setIBeaconListener(createIBeaconListener());
 
-        try {
+        try
+        {
             beaconReader = new BeaconReader(this);
-            //adapter = new RoomSpinnerAdapter(this, android.R.layout.simple_spinner_item, beaconReader.getRooms());
-
-        } catch (JSONException ex) {
+        }
+        catch (JSONException ex)
+        {
             Toast.makeText(this, "Failed to read JSON", Toast.LENGTH_LONG).show();
             finish();
         }
         getLocation();
+
+        Button btn = findViewById(R.id.btn_shareRoomString);
+        btn.setClickable(false); //Can't share lcoation before we have found it
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: 16-03-2018 Implement sharing logic here
+                System.out.println(roomSharableString);
+            }
+        });
     }
 
     @Override
@@ -126,14 +120,16 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 Location l = locationResult.getLastLocation();
-                if(l != null) {
+                if(l != null)
+                {
                     fusedLocationProvider.removeLocationUpdates(locationCallback);
-                    if(checkGeoFence(l)) {
-                        getBLELocation();
-                    } else {
-                        location_status.setText("fail");
-
-                        room_spinner.setVisibility(View.VISIBLE);
+                    if(checkGeoFence(l)) //Are we at building 44?
+                    {
+                        getBLELocation(); //Then we go to Bluetooth
+                    }
+                    else
+                    {
+                        location_status.setText("fail"); //Shit went wrong
                     }
                 }
             }
@@ -146,7 +142,7 @@ public class MainActivity extends BaseActivity {
                 .setNumUpdates(1)
                 .setInterval(1000)
                 .setFastestInterval(500)
-                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     @Override
@@ -207,20 +203,17 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onIBeaconDiscovered(final IBeaconDevice ibeacon, IBeaconRegion region) {
                 RoomDetails r = beaconReader.getRoom(ibeacon.getUniqueId());
-                room = r;
-                roomNameManual = false;
                 try{
-                    location_status.setText(r.getRoom());
+                    roomSharableString = r.getRoomName() + " : " +r.getRoom();
+                    location_status.setText(roomSharableString);
+                    Button btn = findViewById(R.id.btn_shareRoomString);
+                    btn.setClickable(true);
                 }catch (Exception e){
 
                 }
-
-
             }
         };
     }
-
-
 
 
 }

@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="com.kontaktio:sdk-3.2.2">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/sdk-3.2.2.aar/edb05312dcb8939148b4832169c8b0bd/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/sdk-3.2.2.aar/edb05312dcb8939148b4832169c8b0bd/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/sdk-3.2.2.aar/daee594bb68db8d77478f0a7c2df5b35/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/sdk-3.2.2.aar/daee594bb68db8d77478f0a7c2df5b35/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
