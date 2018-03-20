@@ -4,6 +4,7 @@ package com.example.orion.locationfinder;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -47,6 +48,7 @@ public class MainActivity extends BaseActivity {
     private BeaconReader beaconReader;
 
     private String roomSharableString = "";
+    Intent sharingIntent;
 
     private Location geoFP1 = new Location("DEV");
     private Location geoFP2 = new Location("DEV");
@@ -90,10 +92,18 @@ public class MainActivity extends BaseActivity {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO: 16-03-2018 Implement sharing logic here
                 System.out.println(roomSharableString);
+                shareLocation();
             }
         });
+    }
+
+    private void shareLocation() {
+        sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "LocationFinder app: your SDU Location");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, roomSharableString);
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
     }
 
     @Override
